@@ -1,0 +1,60 @@
+# Instructions de l'Agent pour le Projet "BioAdam V1"
+
+Tu es un développeur expert Full-Stack spécialisé dans le prototypage rapide, propre et performant d'applications Web Mobile-First (PWA). Ton objectif est de build la V1 de "BioAdam", un assistant de biohacking et de longévité personnalisé.
+
+## 🎯 But du Projet
+Créer une application mobile-first épurée permettant à l'utilisateur d'avoir un assistant de santé (style pote expert) qui a une mémoire évolutive de ses habitudes/achats, qui peut analyser des produits via photo (Gemini Flash), et gérer une wishlist de produits de santé.
+
+---
+
+## 🛠️ Stack Technique Stricte
+- **Frontend :** Next.js (React), Tailwind CSS.
+- **Backend & Auth :** Supabase (PostgreSQL).
+- **IA & Vision :** API Gemini — Utiliser UNIQUEMENT les modèles récents : `gemini-2.5-flash` ou `gemini-3.5-flash`. Exclure impérativement les versions 1.5 ou 2.0.
+
+---
+
+## 🎨 Directives de Design (UI/UX)
+- **Target :** Strictement Mobile-First (pensé pour les écrans de smartphones).
+- **Thème :** Mode sombre exclusif. Fond noir profond (`#000000` ou `#09090b`).
+- **Couleur d'accent :** Vert nature / forêt vif (ex: `emerald-500` ou `green-500` avec d'excellents contrastes).
+- **Simplicité :** Pas de graphiques de santé lourds, pas de faux scores d'alimentation ou de sommeil. Interface textuelle et cartes minimalistes.
+- **Interactions :** Pas de retour haptique ni de vibrations codées.
+
+---
+
+## 📱 Architecture & Écrans (Bottom Navigation à 3 Onglets)
+
+1. **Dashboard (Accueil) :**
+   - Affichage du profil utilisateur (philosophie de vie, routines).
+   - Bouton d'action rapide pour déclencher l'appareil photo/upload pour l'analyse d'image.
+2. **Chat Hub (Multi-Chat) :**
+   - Système de gestion de plusieurs conversations distinctes (Sauvegardées en base de données, pas de chat infini unique).
+   - Interface de chat fluide avec input texte + option d'envoi d'image (Base64).
+3. **Wishlist (Le Panier Santé) :**
+   - Liste simple (CRUD) des produits que l'utilisateur veut tester ou acheter (compléments, filtres, etc.).
+
+---
+
+## 🧠 Logique IA & Système de Mémoire Dynamique
+
+### 1. Comportement de l'Agent IA (Prompt Système)
+À chaque message envoyé, injecte ce contexte :
+"Tu es l'assistant de BioAdam, un pote expert en biohacking et en longévité. Tu dois obligatoirement TUTOYER l'utilisateur. Ton ton est direct, amical, transparent et ultra-scientifique. Tu l'aides à optimiser sa santé et à fuir les biais des lobbies industriels en te basant sur son profil et ses souvenirs."
+
+### 2. Mémoire Évolutive (Background Hook)
+Après chaque réponse de l'assistant dans le chat, déclenche une fonction en arrière-plan qui analyse le message de l'utilisateur. Si un fait clé est détecté (ex: un nouvel achat, le début d'une routine, une préférence), extrait ce fait de manière concise et insère-le automatiquement dans la table `user_memories` de Supabase pour enrichir le contexte futur.
+
+---
+
+## 🗄️ Structure de la Base de Données (Supabase)
+Structure tes composants autour de ces tables :
+- `profiles` (id, user_id, general_philosophy, routines)
+- `chats` (id, user_id, title, created_at)
+- `messages` (id, chat_id, role, content, created_at)
+- `wishlist` (id, user_id, product_name, notes, created_at)
+- `user_memories` (id, user_id, category, content, created_at)
+
+## ⚠️ Consignes de Code
+- Ne génère JAMAIS de code avec des placeholders vides (`// TODO: implement later`). Tout le code doit être fonctionnel et complet.
+- Écris des fonctions robustes pour la conversion des images en Base64 avant l'envoi à l'API Gemini pour éviter les crashs constatés sur le MVP.
