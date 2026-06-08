@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react'
 import { Send, ImagePlus, Loader2 } from 'lucide-react'
+import { fileToBase64 } from '@/lib/file'
 
 interface ChatInputProps {
   onSend: (text: string, imageBase64?: string, mimeType?: string) => Promise<void>
@@ -33,9 +34,7 @@ export default function ChatInput({ onSend, disabled }: ChatInputProps) {
   const handleImagePick = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
-    const mime = file.type
-    const buffer = await file.arrayBuffer()
-    const base64 = btoa(String.fromCharCode(...new Uint8Array(buffer)))
+    const { base64, mime } = await fileToBase64(file)
     setImage({ base64, mime })
   }
 

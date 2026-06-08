@@ -18,7 +18,9 @@ export default function DashboardPage() {
   }, [])
 
   const handleImage = (base64: string, mimeType: string) => {
-    router.push(`/chat?image=${encodeURIComponent(base64)}&mime=${encodeURIComponent(mimeType)}`)
+    sessionStorage.setItem('pendingImage', base64)
+    sessionStorage.setItem('pendingImageMime', mimeType)
+    router.push('/chat')
   }
 
   return (

@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { useParams, useRouter, useSearchParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { getSupabase } from '@/lib/supabase'
 import { User } from '@supabase/supabase-js'
 import { UserMemory } from '@/types'
@@ -15,7 +15,6 @@ import { ArrowLeft } from 'lucide-react'
 
 export default function ChatPage() {
   const { id } = useParams<{ id: string }>()
-  const searchParams = useSearchParams()
   const router = useRouter()
   const chatId = id
 
@@ -26,8 +25,7 @@ export default function ChatPage() {
   const [streaming, setStreaming] = useState(false)
   const bottomRef = useRef<HTMLDivElement>(null)
 
-  const initialImage = searchParams.get('image')
-  const initialMime = searchParams.get('mime')
+  const initialProcessed = useRef(false)
 
   useEffect(() => {
     getSupabase().auth.getUser().then(({ data }) => setUser(data.user))
@@ -82,14 +80,18 @@ export default function ChatPage() {
     setStreaming(false)
   }
 
-  // Auto-send initial image from camera
+  // Auto-send initial image from camera (via sessionStorage)
   useEffect(() => {
-    if (initialImage && initialMime && messages.length === 0 && !loading) {
-      handleSend('', initialImage, initialMime)
-      // Clean URL params
-      router.replace(`/chat/${chatId}`)
+    if (initialProcessed.current || loading || messages.length > 0 || !user) return
+    initialProcessed.current = true
+    const pendingImage = sessionStorage.getItem('pendingImage')
+    const pendingMime = sessionStorage.getItem('pendingImageMime')
+    if (pendingImage && pendingMime) {
+      sessionStorage.removeItem('pendingImage')
+      sessionStorage.removeItem('pendingImageMime')
+      handleSend('', pendingImage, pendingMime)
     }
-  }, [initialImage, initialMime, messages.length, loading])
+  }, [loading, user])
 
   if (loading) {
     return (

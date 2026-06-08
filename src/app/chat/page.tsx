@@ -18,6 +18,17 @@ export default function ChatHubPage() {
     getSupabase().auth.getUser().then(({ data }) => setUser(data.user))
   }, [])
 
+  // Redirect to new chat with pending image from camera
+  useEffect(() => {
+    const pending = sessionStorage.getItem('pendingImage')
+    const pendingMime = sessionStorage.getItem('pendingImageMime')
+    if (!pending || !pendingMime) return
+    ;(async () => {
+      const chat = await createChat()
+      if (chat) router.push(`/chat/${chat.id}`)
+    })()
+  }, [user])
+
   const handleNew = async () => {
     const chat = await createChat()
     if (chat) router.push(`/chat/${chat.id}`)
@@ -63,11 +74,11 @@ export default function ChatHubPage() {
           {chats.map((chat) => (
             <div
               key={chat.id}
-              className="group flex items-center gap-3 rounded-2xl border border-zinc-800 bg-zinc-900/50 px-4 py-3 transition-colors hover:border-zinc-700"
+              className="group flex w-full max-w-full items-center gap-3 overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-900/50 px-4 py-3 transition-colors hover:border-zinc-700"
             >
               <button
                 onClick={() => router.push(`/chat/${chat.id}`)}
-                className="flex-1 text-left"
+                className="min-w-0 flex-1 text-left"
               >
                 {renamingId === chat.id ? (
                   <input
@@ -79,7 +90,7 @@ export default function ChatHubPage() {
                   />
                 ) : (
                   <>
-                    <p className="text-sm font-medium text-white truncate">{chat.title}</p>
+                    <p className="truncate text-sm font-medium text-white">{chat.title}</p>
                     <p className="text-xs text-zinc-600">
                       {new Date(chat.created_at).toLocaleDateString('fr-FR')}
                     </p>
@@ -88,7 +99,7 @@ export default function ChatHubPage() {
               </button>
 
               {renamingId === chat.id ? (
-                <div className="flex gap-1">
+                <div className="flex shrink-0 gap-1">
                   <button onClick={() => confirmRename(chat.id)} className="rounded-lg p-1.5 text-emerald-400 hover:bg-zinc-800">
                     <Check size={14} />
                   </button>
@@ -97,11 +108,11 @@ export default function ChatHubPage() {
                   </button>
                 </div>
               ) : (
-                <div className="flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+                <div className="flex shrink-0 gap-1">
                   <button onClick={() => startRename(chat.id, chat.title)} className="rounded-lg p-1.5 text-zinc-500 hover:bg-zinc-800 hover:text-emerald-400">
                     <Edit3 size={14} />
                   </button>
-                  <button onClick={() => deleteChat(chat.id)} className="rounded-lg p-1.5 text-zinc-500 hover:bg-zinc-800 hover:text-red-400">
+                  <button onClick={() => { if (window.confirm('Supprimer cette conversation ?')) deleteChat(chat.id) }} className="rounded-lg p-1.5 text-zinc-500 hover:bg-zinc-800 hover:text-red-400">
                     <Trash2 size={14} />
                   </button>
                 </div>

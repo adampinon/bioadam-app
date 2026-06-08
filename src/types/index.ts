@@ -36,3 +36,15 @@ export interface UserMemory {
   content: string;
   created_at: string;
 }
+
+export interface ProductScan {
+  id: string;
+  user_id: string;
+  product_name: string;
+  image_base64: string;
+  image_mime: string;
+  verdict: 'validated' | 'rejected';
+  summary: string;
+  full_analysis: string;
+  created_at: string;
+}

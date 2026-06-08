@@ -2,6 +2,7 @@
 
 import { Camera, Loader2 } from 'lucide-react'
 import { useRef, useState } from 'react'
+import { fileToBase64 } from '@/lib/file'
 
 interface CameraButtonProps {
   onImage: (base64: string, mimeType: string) => void
@@ -15,9 +16,7 @@ export default function CameraButton({ onImage }: CameraButtonProps) {
     const file = e.target.files?.[0]
     if (!file) return
     setLoading(true)
-    const mime = file.type
-    const buffer = await file.arrayBuffer()
-    const base64 = btoa(String.fromCharCode(...new Uint8Array(buffer)))
+    const { base64, mime } = await fileToBase64(file)
     onImage(base64, mime)
     setLoading(false)
   }

@@ -12,7 +12,7 @@ export default function WishlistPage() {
   const { items, loading, addItem, updateItem, deleteItem } = useWishlist(user?.id)
   const [showForm, setShowForm] = useState(false)
   const [name, setName] = useState('')
-  const [notes, setNotes] = useState('')
+  const [link, setLink] = useState('')
 
   useEffect(() => {
     getSupabase().auth.getUser().then(({ data }) => setUser(data.user))
@@ -21,9 +21,9 @@ export default function WishlistPage() {
   const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!name.trim()) return
-    await addItem(name.trim(), notes.trim())
+    await addItem(name.trim(), link.trim())
     setName('')
-    setNotes('')
+    setLink('')
     setShowForm(false)
   }
 
@@ -50,11 +50,11 @@ export default function WishlistPage() {
             className="w-full rounded-lg bg-black px-3 py-2.5 text-sm text-white outline-none ring-1 ring-zinc-700 focus:ring-emerald-500"
             autoFocus
           />
-          <textarea
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-            placeholder="Notes (optionnel)"
-            rows={2}
+          <input
+            value={link}
+            onChange={(e) => setLink(e.target.value)}
+            placeholder="Lien produit (URL)"
+            type="url"
             className="w-full rounded-lg bg-black px-3 py-2.5 text-sm text-zinc-300 outline-none ring-1 ring-zinc-700 focus:ring-emerald-500"
           />
           <div className="flex gap-2">

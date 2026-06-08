@@ -74,3 +74,21 @@ ALTER TABLE user_memories ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can manage own memories"
   ON user_memories FOR ALL
   USING (auth.uid() = user_id);
+
+-- PRODUCT SCANS
+CREATE TABLE IF NOT EXISTS product_scans (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  product_name TEXT NOT NULL DEFAULT '',
+  image_base64 TEXT NOT NULL,
+  image_mime TEXT NOT NULL DEFAULT 'image/jpeg',
+  verdict TEXT NOT NULL CHECK (verdict IN ('validated', 'rejected')),
+  summary TEXT NOT NULL DEFAULT '',
+  full_analysis TEXT NOT NULL DEFAULT '',
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE product_scans ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Users can manage own product scans"
+  ON product_scans FOR ALL
+  USING (auth.uid() = user_id);
