@@ -1,10 +1,11 @@
 'use client'
 
 import { usePathname, useRouter } from 'next/navigation'
-import { LayoutDashboard, MessageSquare, Heart } from 'lucide-react'
+import { LayoutDashboard, Camera, MessageSquare, Heart } from 'lucide-react'
 
 const tabs = [
   { href: '/', label: 'Dashboard', icon: LayoutDashboard },
+  { href: '/analyses', label: 'Analyses', icon: Camera },
   { href: '/chat', label: 'Chat', icon: MessageSquare },
   { href: '/wishlist', label: 'Wishlist', icon: Heart },
 ]
